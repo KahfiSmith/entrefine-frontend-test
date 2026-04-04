@@ -20,10 +20,8 @@ This repository is intended for:
 | UI Runtime | React `19` / React DOM `19` |
 | Language | TypeScript `strict` |
 | Styling | Tailwind CSS `v4` |
-| UI Utilities | `clsx`, `tailwind-merge`, `class-variance-authority`, `lucide-react`, `framer-motion` |
-| Validation | Zod |
+| UI Utilities | `clsx`, `tailwind-merge`, `class-variance-authority`, `lucide-react` |
 | Data Source | Local CSV files in `data/` |
-| Testing | Jest |
 | Linting | ESLint |
 
 ## Features
@@ -80,7 +78,6 @@ pnpm start
 ```bash
 pnpm lint
 pnpm type-check
-pnpm test
 ```
 
 ### Explore the current app surface
@@ -105,8 +102,6 @@ pnpm start
 pnpm lint
 pnpm lint:fix
 pnpm type-check
-pnpm test
-pnpm test:watch
 ```
 
 ## Project Structure
@@ -121,6 +116,7 @@ pnpm test:watch
 │  │  ├─ dashboard/
 │  │  └─ ui/
 │  ├─ lib/
+│  │  ├─ dashboard/
 │  │  └─ utils/
 │  └─ types/
 └─ package.json
@@ -131,7 +127,8 @@ pnpm test:watch
 - `src/app` and `src/app/api`: route boundaries only
 - `src/components/ui`: reusable presentation primitives
 - `src/components/dashboard`: dashboard-specific UI composition
-- `src/lib`: utility and data-processing logic
+- `src/lib/dashboard`: CSV parsing, metrics, filters, and dashboard insights
+- `src/lib/utils`: shared low-level helpers
 - `src/types`: shared dashboard contracts
 - `data`: raw CSV input files
 
