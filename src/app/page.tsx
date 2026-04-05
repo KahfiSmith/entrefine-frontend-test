@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { ChannelSummary } from "@/components/dashboard/channel-summary";
 import { MetricCards } from "@/components/dashboard/metric-cards";
+import { RevenueTrend } from "@/components/dashboard/revenue-trend";
 import { StatusSummary } from "@/components/dashboard/status-summary";
 import { TransactionsTable } from "@/components/dashboard/transactions-table";
 import {
@@ -11,10 +12,14 @@ import {
 } from "@/lib/dashboard/filter";
 import {
   calculateDashboardMetrics,
+  calculateRevenueTrend,
   getTransactionRevenue,
-  isProblematicTransaction,
 } from "@/lib/dashboard/metrics";
 import { loadTransactions } from "@/lib/dashboard/load-transactions";
+import {
+  formatStatusLabel,
+  getTransactionStatusTone,
+} from "@/lib/dashboard/status";
 import type {
   DashboardChannel,
   DashboardTransactionStatus,
@@ -80,14 +85,6 @@ function formatTransactionDate(value: string | null): string {
   }
 
   return dateFormatter.format(date);
-}
-
-function formatStatusLabel(status: string): string {
-  return status
-    .toLowerCase()
-    .split("_")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
 }
 
 function getChannelSummaries(
@@ -182,6 +179,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const filters = parseDashboardFilters(await searchParams);
   const transactions = filterTransactions(allTransactions, filters);
   const metrics = calculateDashboardMetrics(transactions);
+  const revenueTrend = calculateRevenueTrend(transactions);
   const channelSummaries = getChannelSummaries(transactions);
   const statusSummaries = getStatusSummaries(transactions);
   const recentTransactions = getRecentTransactions(transactions);
@@ -190,7 +188,6 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const metricCardValues = {
     totalRevenue: formatCurrency(metrics.totalRevenue),
     totalTransactions: formatCount(metrics.totalTransactions),
-    averageOrderValue: formatCurrency(metrics.averageOrderValue),
     problematicTransactions: formatCount(metrics.problematicTransactions),
   };
   const channelSummaryItems = channelSummaries.map((summary) => ({
@@ -203,15 +200,30 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     status: formatStatusLabel(summary.status),
     revenue: formatCurrency(summary.revenue),
     count: formatCount(summary.count),
+    tone: getTransactionStatusTone(summary.status),
   }));
   const recentTransactionItems = recentTransactions.map((transaction) => ({
     amount: formatCurrency(getTransactionRevenue(transaction)),
     channel: transaction.channel,
     date: formatTransactionDate(transaction.payTime ?? transaction.createTime),
-    isProblematic: isProblematicTransaction(transaction),
     orderId: transaction.orderId,
     status: formatStatusLabel(transaction.status),
+    tone: getTransactionStatusTone(transaction.status),
   }));
+  const peakTrendRevenue = Math.max(...revenueTrend.map((point) => point.revenue), 0);
+  const revenueTrendItems = revenueTrend.map((point) => {
+    const date = new Date(point.date);
+    const dateLabel = Number.isNaN(date.getTime())
+      ? point.date
+      : dateFormatter.format(date);
+
+    return {
+      dateLabel,
+      revenue: formatCurrency(point.revenue),
+      transactions: formatCount(point.transactions),
+      width: `${peakTrendRevenue > 0 ? Math.max((point.revenue / peakTrendRevenue) * 100, 8) : 0}%`,
+    };
+  });
 
   return (
     <main className="min-h-screen bg-background">
@@ -293,7 +305,8 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
         <MetricCards {...metricCardValues} />
 
-        <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+        <section className="grid gap-6 xl:grid-cols-3">
+          <RevenueTrend items={revenueTrendItems} />
           <ChannelSummary items={channelSummaryItems} />
           <StatusSummary items={statusSummaryItems} />
         </section>

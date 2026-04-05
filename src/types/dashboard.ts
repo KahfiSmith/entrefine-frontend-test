@@ -73,7 +73,6 @@ export interface TransactionRecord {
 export interface DashboardMetrics {
   totalRevenue: number;
   totalTransactions: number;
-  averageOrderValue: number;
   problematicTransactions: number;
   problematicRevenue: number;
 }
@@ -98,7 +97,6 @@ export interface ChannelSummary {
   channel: DashboardChannel;
   revenue: number;
   transactions: number;
-  averageOrderValue: number;
   revenueShare: number;
   problematicTransactions: number;
 }
