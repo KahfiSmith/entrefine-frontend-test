@@ -1,15 +1,34 @@
+import type { TransactionStatusTone } from "@/lib/dashboard/status";
+
 type TransactionTableItem = {
   amount: string;
   channel: string;
   date: string;
-  isProblematic: boolean;
   orderId: string;
   status: string;
+  tone: TransactionStatusTone;
 };
 
 type TransactionsTableProps = {
   items: TransactionTableItem[];
 };
+
+function getStatusBadgeClasses(tone: TransactionStatusTone): string {
+  switch (tone) {
+    case "success":
+      return "border-emerald-200 bg-emerald-50 text-emerald-700";
+    case "danger":
+      return "border-rose-200 bg-rose-50 text-rose-700";
+    case "warning":
+      return "border-amber-200 bg-amber-50 text-amber-700";
+    case "info":
+      return "border-sky-200 bg-sky-50 text-sky-700";
+    case "accent":
+      return "border-violet-200 bg-violet-50 text-violet-700";
+    default:
+      return "border-slate-200 bg-slate-50 text-slate-700";
+  }
+}
 
 export function TransactionsTable({ items }: TransactionsTableProps) {
   return (
@@ -48,9 +67,7 @@ export function TransactionsTable({ items }: TransactionsTableProps) {
                     <span
                       className={[
                         "inline-flex rounded-full border px-2.5 py-1 text-xs font-medium",
-                        item.isProblematic
-                          ? "border-destructive/20 bg-destructive/10 text-destructive"
-                          : "border-primary/10 bg-primary/10 text-primary",
+                        getStatusBadgeClasses(item.tone),
                       ].join(" ")}
                     >
                       {item.status}

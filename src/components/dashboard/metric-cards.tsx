@@ -2,11 +2,9 @@ import {
   AlertTriangle,
   CircleDollarSign,
   ReceiptText,
-  TrendingUp,
 } from "lucide-react";
 
 type MetricCardsProps = {
-  averageOrderValue: string;
   problematicTransactions: string;
   totalRevenue: string;
   totalTransactions: string;
@@ -48,13 +46,12 @@ function MetricCard({
 }
 
 export function MetricCards({
-  averageOrderValue,
   problematicTransactions,
   totalRevenue,
   totalTransactions,
 }: MetricCardsProps) {
   return (
-    <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       <MetricCard
         description="Total revenue"
         icon={CircleDollarSign}
@@ -64,11 +61,6 @@ export function MetricCards({
         description="Total transactions"
         icon={ReceiptText}
         value={totalTransactions}
-      />
-      <MetricCard
-        description="Average order value"
-        icon={TrendingUp}
-        value={averageOrderValue}
       />
       <MetricCard
         description="Problematic transactions"

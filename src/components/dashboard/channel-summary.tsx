@@ -1,5 +1,3 @@
-import { Store } from "lucide-react";
-
 type ChannelSummaryItem = {
   channel: string;
   revenue: string;
@@ -23,7 +21,6 @@ export function ChannelSummary({ items }: ChannelSummaryProps) {
             Revenue and transaction comparison by channel.
           </p>
         </div>
-        <Store className="size-5 text-muted-foreground" />
       </div>
 
       <div className="mt-6 space-y-3">
